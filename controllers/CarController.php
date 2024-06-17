@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Car;
 use app\models\CarSearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -29,19 +30,19 @@ class CarController extends Controller
                 ],
                 'access' => [
                     'class' => \yii\filters\AccessControl::class,
-                    'only' => ['create', 'update'],
+                    'only' => ['index', 'create', 'update', 'delete'],
                     'rules' => [
-                        // deny all POST requests
-                        [
-                            'allow' => false,
-                            'verbs' => ['POST']
-                        ],
-                        // allow authenticated users
                         [
                             'allow' => true,
+                            'actions' => ['index', 'create', 'delete', 'update'],
                             'roles' => ['@'],
+                            'matchCallback' => function ($rule, $action) {
+                                return Yii::$app->user->identity->adminRole();
+                            },
                         ],
-                        // everything else is denied
+                        [
+                            'allow' => false,
+                        ],
                     ],
                 ],
             ]
